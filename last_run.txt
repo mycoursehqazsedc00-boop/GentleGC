@@ -1,0 +1,53 @@
+== 1. Backend selection (separate probes, no merged flag) ==
+PASS  timer=ok
+PASS  timer=nons
+PASS  timer=nofn
+PASS  timer=throws
+PASS  timer=nilret
+== 2. Timing: collect every 180s ==
+PASS  ok: 5 collects in 1000s
+PASS  ok: first at ~180s
+PASS  ok: spacing ~180s
+PASS  nons: 5 collects in 1000s
+PASS  nons: first at ~180s
+PASS  nons: spacing ~180s
+== 3. Back-to-back vs reconstructed stock (same frame sequence) ==
+PASS  fallback path == stock: same count
+PASS  fallback path == stock: same timestamps
+PASS  C_Timer path count within 1 of stock (boundary at 3600s)
+PASS  C_Timer path within 0.5s of stock for every shared collect
+PASS  C_Timer path is drift-free (n*180s)
+PASS  coarse 100ms frames: fallback == stock
+== 4. Combat deferral ==
+PASS  no collect during combat
+PASS  exactly one collect at combat end (two ticks coalesced)
+PASS  regen again with nothing pending: no extra collect
+PASS  timer keeps running after deferral
+PASS  regen with nothing pending: no collect
+PASS  ggc_combat=1 collects in combat (stock behavior)
+PASS  OnUpdate path defers + resumes too
+== 5. Robustness ==
+PASS  collect error is reported, not swallowed
+PASS  ticker survives an error and collects next time
+PASS  50 loading screens -> one ticker
+PASS  50 loading screens -> still 2 collects in 400s
+PASS  OnUpdate path: 50 loading screens -> still 2 collects
+== 6. Debug output / slash commands ==
+PASS  debug off: timer collect prints nothing
+PASS  ggc_debug=1 (stock switch) prints a report
+PASS  report shows freed memory and backend
+PASS  /ggc collects now and reports
+PASS  /ggc does not leave debug on
+PASS  /ggc debug toggles on
+PASS  /ggc DEBUG toggles off (case-insens.)
+PASS  /ggc with nil msg does not error
+== 7. Trace (C_Timer path, combat deferral, 400s) ==
+  [   0.000] SetScript OnEvent
+  [   0.000] C_Timer.NewTicker(180)
+  [ 180.016] chat: |cff33ff99GentleGC:|r deferred until combat ends
+  [ 186.008] collectgarbage()
+  [ 186.008] chat: |cff33ff99GentleGC:|r post-combat: 20000 KB -> 15000 KB (freed 5000 KB) in 0.000s [C_Timer]
+  [ 360.008] collectgarbage()
+  [ 360.008] chat: |cff33ff99GentleGC:|r timer: 15000 KB -> 10000 KB (freed 5000 KB) in 0.000s [C_Timer]
+
+RESULT: 37 passed, 0 failed
