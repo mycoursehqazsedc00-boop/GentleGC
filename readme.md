@@ -2,6 +2,9 @@
 
 > Run Lua garbage collection on a combat-aware timer before the client hits its allocation threshold and causes long stop-the-world pauses.
 
+> [!WARNING]
+> **Not needed if you use `WeirdUtils.dll`:** [WeirdUtils](https://codeberg.org/MarcelineVQ/WeirdUtils/) (`weirdperformance`) already replaces the stock Lua 5.0 allocator and stop-the-world garbage collector with an incremental/generational collector (~9ms chunks). If you have `WeirdUtils.dll` installed, you do **not** need this addon.
+
 ## Client Mods Used
 | Mod | Purpose in this addon | Required? |
 |---|---|---|
